@@ -98,4 +98,6 @@ Uses a Debian-based container, as the official image does not support the additi
 HAProxy Version: 2.4 is installed, and acme.sh is used for a Cloudflare DNS challenge to create a wildcard certificate. The API token is encrypted in vars/main.yml.
 Access Control: ACLs are used to recognize hostnames (with hdr(host)) for each service, routing requests to port 5443 (forwarded to localhost) for access to the environment.
 HAProxy Service: The HAProxy service can be started with service start haproxy.
+8. Securing variables*(Ansible-valut encrypt,decrypt, sifra je u ansible_local)
+9. Architecture diagram
 ![image](https://github.com/user-attachments/assets/9624532f-aedc-4bb8-b439-05cae7a97d96)
