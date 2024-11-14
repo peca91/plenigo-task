@@ -9,3 +9,5 @@
 
 - name: Start haproxy
   ansible.builtin.shell: "service haproxy start"
+- name: Start prometheus node exporter
+  ansible.builtin.shell: "service prometheus-node-exporter start"
