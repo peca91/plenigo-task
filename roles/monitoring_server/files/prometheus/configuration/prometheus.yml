@@ -24,7 +24,8 @@ scrape_configs:
             "webserver-1:9100",
             "webserver-2:9100",
             "postgres:9100",
-            "haproxy:9100"
+            "haproxy:9100",
+            "haproxy:8405"
 
           ]
 

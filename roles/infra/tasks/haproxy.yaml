@@ -10,6 +10,7 @@
       - "5443:5443"    # Expose HTTPS port
       - "8080:8080"    # haproxy stats port
       - "9100"   # prometheus exporter
+      - "8405" #prometheus
     networks: 
       - name: "{{ netbridge }}"
     privileged: true

@@ -15,6 +15,7 @@
           - "8080"
           - "22"
           - "9100"
+          - "8405"
     - role: haproxy
       vars:
         ACME_EMAIL: "petartornjanski@gmail.com"
