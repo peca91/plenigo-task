@@ -79,13 +79,17 @@ A full monitoring stack is deployed within a single container, suitable for test
 - blackbox_exporter
 - Alertmanager
 
-# Grafana Setup: A test password is set for Grafana (stored in a variable but unencrypted as it’s a test environment).
+## Grafana Setup: 
+A test password is set for Grafana (stored in a variable but unencrypted as it’s a test environment).
 
-# Prometheus Rules: Scraping and alert rules are configured in prometheus.yaml and prometheus_rules.yml.
+## Prometheus Rules: 
+Scraping and alert rules are configured in prometheus.yaml and prometheus_rules.yml.
 
-# Alertmanager: Basic configuration for email alerts (SMTP password is not set).
+## Alertmanager: 
+Basic configuration for email alerts (SMTP password is not set).
 
-# blackbox_exporter: Used for link probing as defined in Prometheus rules.
+## blackbox_exporter: 
+Used for link probing as defined in Prometheus rules.
 
 Service files are created for each monitoring component and can be managed with service start.
 
