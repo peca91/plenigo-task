@@ -1,0 +1,45 @@
+---
+- name: Add user 'blackbox_exporter'
+  ansible.builtin.user:
+    name: blackbox_exporter
+    shell: /usr/sbin/nologin
+    home: /var/lib/blackbox_exporter
+
+- name: Create /tmp/blackbox_exporter directory
+  ansible.builtin.file:
+    path: /tmp/blackbox_exporter
+    state: directory
+
+- name: Download and unarchive blackbox_exporter version
+  ansible.builtin.unarchive:
+    src: https://github.com/prometheus/blackbox_exporter/releases/download/v{{ blackbox_exporter_version }}/blackbox_exporter-{{ blackbox_exporter_version }}.linux-amd64.tar.gz
+    dest: /tmp/blackbox_exporter/
+    remote_src: yes
+
+- name: Copy blackbox_exporter
+  ansible.builtin.copy:
+    src: /tmp/blackbox_exporter/blackbox_exporter-{{ blackbox_exporter_version }}.linux-amd64/blackbox_exporter
+    dest: /usr/bin/blackbox_exporter
+    remote_src: yes
+    mode: "755"
+
+- name: Delete /tmp/blackbox_exporter directory
+  ansible.builtin.file:
+    path: /tmp/blackbox_exporter
+    state: absent
+
+- name: Create /mnt/data/blackbox_exporter directory
+  ansible.builtin.file:
+    path: /mnt/data/blackbox_exporter
+    state: directory
+    owner: blackbox_exporter
+    group: blackbox_exporter
+
+- name: Copy blackbox.yml
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/blackbox_exporter/blackbox.yml"
+    dest: /mnt/data/blackbox_exporter/blackbox.yml
+    mode: "0644"
+    owner: blackbox_exporter
+    group: blackbox_exporter
+

@@ -1,0 +1,24 @@
+---
+- name: Enable Grafana Repository
+  ansible.builtin.shell: |
+    apt-get install -y apt-transport-https
+    apt-get install -y software-properties-common wget
+    sudo mkdir -p /etc/apt/keyrings/
+    wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor | sudo tee /etc/apt/keyrings/grafana.gpg > /dev/null
+
+    echo "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main" | sudo tee -a /etc/apt/sources.list.d/grafana.list
+    apt-get update
+
+- name: Install grafana
+  ansible.builtin.apt:
+    name: grafana
+    state: latest
+
+- name: Copy grafana.ini
+  ansible.builtin.template:
+    src: "{{ role_path }}/files/grafana/grafana.ini.j2"
+    dest: /etc/grafana/grafana.ini
+    mode: "0640"
+    owner: root
+    group: grafana
+

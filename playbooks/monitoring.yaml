@@ -1,0 +1,26 @@
+---
+- name: Setup monitoring server
+  hosts: monitoring
+
+  vars_files:
+    - vars/security.yml
+
+  roles:
+    - common
+    - geerlingguy.security
+
+    - role: geerlingguy.firewall
+      vars:
+        firewall_allowed_tcp_ports:
+          - "22"
+          - "9090"
+          - "9093"
+          - "3000"
+          - "9115"
+          - "9100"
+
+    - role: monitoring_server
+      vars:
+        alert_manager_version: 0.25.0
+        blackbox_exporter_version: 0.24.0
+        prometheus_version: 2.44.0

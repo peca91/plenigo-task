@@ -1,0 +1,3 @@
+pg_db_name: testdb
+pg_user: petar
+pg_user_password: newpass

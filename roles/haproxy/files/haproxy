@@ -1,0 +1,27 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          haproxy
+# Required-Start:    $network
+# Required-Stop:     
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start haproxy at boot time
+### END INIT INFO
+
+haproxy_CMD="/usr/sbin/haproxy -f /etc/haproxy/haproxy.cfg"
+
+case "$1" in
+  start)
+    nohup $haproxy_CMD > /proc/1/fd/1 2>/proc/1/fd/2 &
+    ;;
+  stop)
+    pkill -f "$haproxy_CMD"
+    ;;
+  restart)
+    pkill -f "$haproxy_CMD"
+    nohup $haproxy_CMD > /proc/1/fd/1 2>/proc/1/fd/2 &
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart}"
+    exit 1
+esac

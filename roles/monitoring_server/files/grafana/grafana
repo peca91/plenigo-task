@@ -1,0 +1,27 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          grafana
+# Required-Start:    $network
+# Required-Stop:     
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start grafana at boot time
+### END INIT INFO
+
+grafana_CMD="/usr/sbin/grafana-server --homepath /usr/share/grafana --config /etc/grafana/grafana.ini --packaging=docker cfg:default.log.mode=console"
+
+case "$1" in
+  start)
+    nohup $grafana_CMD > /proc/1/fd/1 2>/proc/1/fd/2 &
+    ;;
+  stop)
+    pkill -f "$grafana_CMD"
+    ;;
+  restart)
+    pkill -f "$grafana_CMD"
+    nohup $grafana_CMD > /proc/1/fd/1 2>/proc/1/fd/2 &
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart}"
+    exit 1
+esac

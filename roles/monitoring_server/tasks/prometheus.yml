@@ -1,0 +1,56 @@
+---
+- name: Add user 'prometheus'
+  ansible.builtin.user:
+    name: prometheus
+    shell: /usr/sbin/nologin
+    home: /var/lib/prometheus
+
+- name: Create /tmp/prometheus directory
+  ansible.builtin.file:
+    path: /tmp/prometheus
+    state: directory
+
+- name: Download and unarchive prometheus version
+  ansible.builtin.unarchive:
+    src: https://github.com/prometheus/prometheus/releases/download/v{{ prometheus_version }}/prometheus-{{ prometheus_version }}.linux-amd64.tar.gz
+    dest: /tmp/prometheus/
+    remote_src: yes
+
+- name: Copy prometheus
+  ansible.builtin.copy:
+    src: /tmp/prometheus/prometheus-{{ prometheus_version }}.linux-amd64/prometheus
+    dest: /usr/bin/prometheus
+    remote_src: yes
+    mode: "755"
+
+- name: Delete /tmp/prometheus directory
+  ansible.builtin.file:
+    path: /tmp/prometheus
+    state: absent
+
+- name: Create /mnt/data/prometheus directory
+  ansible.builtin.file:
+    path: /mnt/data/prometheus/
+    state: directory
+
+- name: Copy Prometheus configuration
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/prometheus/configuration/prometheus.yml"
+    dest: /mnt/data/prometheus/prometheus.yml
+    owner: prometheus
+    group: prometheus
+
+- name: Copy Prometheus Rules configuration
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/prometheus/configuration/prometheus_rules.yml"
+    dest: /mnt/data/prometheus/prometheus_rules.yml
+    owner: prometheus
+    group: prometheus
+
+- name: Create data directory
+  ansible.builtin.file:
+    path: /mnt/data/prometheus/data
+    state: directory
+    owner: prometheus
+    group: prometheus
+

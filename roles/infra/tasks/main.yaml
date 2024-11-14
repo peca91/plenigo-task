@@ -1,0 +1,6 @@
+---
+- import_tasks: network.yaml
+- import_tasks: web.yaml
+- import_tasks: postgres.yaml
+- import_tasks: monitoring.yaml
+- import_tasks: haproxy.yaml

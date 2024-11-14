@@ -1,0 +1,2 @@
+---
+security_ssh_permit_root_login: "yes"

@@ -1,0 +1,66 @@
+- name: Check if PostgreSQL data directory is initialized
+  ansible.builtin.stat:
+    path: /var/lib/postgresql/data/PG_VERSION
+  register: pg_data_stat
+
+- name: Initialize PostgreSQL data directory if not present
+  ansible.builtin.shell: "su postgres -c 'initdb -D /var/lib/postgresql/data'"
+  when: not pg_data_stat.stat.exists
+
+# Create a backup script
+- name: Create PostgreSQL backup script
+  copy:
+    dest: "/postgresql_backups/backup.sh"
+    content: |
+      #!/bin/bash
+      # Simple PostgreSQL backup script
+      TIMESTAMP=$(date +"%F_%T")
+      BACKUP_DIR="/postgresql_backups"
+      BACKUP_FILE="${BACKUP_DIR}/backup_${TIMESTAMP}.sql"
+      pg_dump -h localhost -U postgres -Fc postgres > $BACKUP_FILE
+      echo "Backup saved to $BACKUP_FILE"
+    mode: '0755'
+
+# Add a cron job to perform backup daily at midnight
+- name: Create cron job for daily backups
+  cron:
+    name: "PostgreSQL Backup"
+    minute: "0"
+    hour: "0"
+    job: "/postgresql_backups/backup.sh"
+    state: present
+
+# Configure pg_hba.conf for basic access control
+- name: Configure pg_hba.conf for basic access control
+  lineinfile:
+    path: "/var/lib/postgresql/data/pg_hba.conf"
+    regexp: "^host.*all.*all.*0.0.0.0/0.*trust"
+    line: "host    all             all             0.0.0.0/0               md5"
+    backup: yes
+
+# Configure PostgreSQL settings (optional tuning)
+- name: Configure PostgreSQL settings
+  lineinfile:
+    path: "/var/lib/postgresql/data/postgresql.conf"
+    regexp: "^#?listen_addresses = 'localhost'"
+    line: "listen_addresses = '*'"
+    backup: yes
+
+# Reload PostgreSQL to apply configuration changes TODO change to handlers
+# Check if PostgreSQL is running
+- name: Check PostgreSQL status
+  ansible.builtin.shell: "pg_isready -U postgres"
+  register: pg_status
+  ignore_errors: true
+
+# Start PostgreSQL if not running
+- name: Start PostgreSQL if not running
+  ansible.builtin.shell: "su postgres -c 'pg_ctl start'"
+  when: pg_status.rc != 0
+
+# Reload PostgreSQL if running
+- name: Reload PostgreSQL to apply configuration changes
+  ansible.builtin.shell: "su postgres -c 'pg_ctl reload'"
+  when: pg_status.rc == 0
+
+  

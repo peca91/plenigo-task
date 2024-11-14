@@ -1,0 +1,15 @@
+---
+- name: Create haproxy
+  docker_container:
+    name: "haproxy"
+    image: debian:bullseye
+    state: started
+    command: /bin/bash -c "apt-get update && apt-get install -y python3 tzdata openssh-server sudo curl cron && touch /var/log/auth.log && sleep infinity"
+    ports:
+      - "22"     # Expose SSH port
+      - "5443:5443"    # Expose HTTPS port
+      - "8080:8080"    # haproxy stats port
+      - "9100"   # prometheus exporter
+    networks: 
+      - name: "{{ netbridge }}"
+    privileged: true

@@ -1,0 +1,33 @@
+---
+- name: Define Docker volume for data
+  docker_volume:
+    name: postgres_data
+    state: present
+
+- name: Define Docker volume for backups
+  docker_volume:
+    name: postgres_backup
+    state: present
+  
+
+- name: Create PostgreSQL container
+  docker_container:
+    name: postgres
+    image: postgres:13
+    env:
+      POSTGRES_PASSWORD: "{{ pg_password }}"
+    state: started
+    command: /bin/bash -c "apt-get update && apt-get install -y python3 pip tzdata openssh-server cron sudo && touch /var/log/auth.log && sleep infinity"
+    ports:
+      - "22"     # Expose SSH port
+      - "5432:5432"
+      - "9100"   # prometheus exporter
+    networks: 
+      - name: "{{ netbridge }}"
+    privileged: true
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - postgres_backup:/postgresql_backups
+
+
+  

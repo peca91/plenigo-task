@@ -1,0 +1,26 @@
+---
+groups:
+  - name: default
+    rules:
+      - alert: InstanceDown
+        expr: up == 0
+        for: 2m
+        annotations:
+          summary: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 2 minutes."
+
+      - alert: ServiceDown
+        expr: probe_success == 0
+        for: 5m
+        annotations:
+          summary: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 2 minutes."
+
+      - alert: TLSCertificateNearExpiration
+        expr: probe_ssl_earliest_cert_expiry - time() < 60 * 60 * 24 * 2
+        for: 1m
+
+      - alert: DiskUsageHigh
+        expr: (1 - (node_filesystem_avail_bytes{mountpoint="/",fstype!="rootfs"} / node_filesystem_size_bytes)) > 0.75
+        for: 1m
+        annotations:
+          summary: "Disk usage on {{ $labels.instance }}:{{ $labels.mountpoint }} ({{ $labels.device }}) exceeds 75%."
+

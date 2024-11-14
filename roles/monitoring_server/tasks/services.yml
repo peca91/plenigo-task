@@ -1,0 +1,44 @@
+---
+- name: Copy alertmanager init script
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/alertmanager/alertmanager"
+    dest: /etc/init.d/alertmanager
+    mode: "0755"
+    owner: alertmanager
+    group: alertmanager
+
+- name: Copy grafana init script
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/grafana/grafana"
+    dest: /etc/init.d/grafana
+    mode: "0755"
+    owner: grafana
+    group: grafana
+
+- name: Copy prometheus init script
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/prometheus/prometheus"
+    dest: /etc/init.d/prometheus
+    mode: "0755"
+    owner: prometheus
+    group: prometheus
+
+- name: Copy prometheus init script
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/blackbox_exporter/blackbox_exporter"
+    dest: /etc/init.d/blackbox_exporter
+    mode: "0755"
+    owner: blackbox_exporter
+    group: blackbox_exporter
+
+- name: Start Prometheus
+  ansible.builtin.shell: "service prometheus start"
+
+- name: Start Blackbox Exporter
+  ansible.builtin.shell: "service blackbox_exporter start"
+
+- name: Start Grafana
+  ansible.builtin.shell: "service grafana start"
+
+- name: Start Alertmanager
+  ansible.builtin.shell: "service alertmanager start"

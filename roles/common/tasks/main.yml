@@ -1,0 +1,37 @@
+---
+- name: Set up authorized keys
+  ansible.posix.authorized_key:
+    user: root
+    state: present
+    key: "{{ item }}"
+  with_file:
+    - public_keys/petar.tornjanski
+
+- name: Set timezone to Europe/Belgrade
+  community.general.timezone:
+    name: Europe/Belgrade
+
+- name: Install prometheus-node-exporter
+  ansible.builtin.package:
+    name: prometheus-node-exporter
+    state: present
+
+- name: Install vim
+  ansible.builtin.package:
+    name: vim
+    state: present
+
+- name: Install htop
+  ansible.builtin.package:
+    name: htop
+    state: present
+
+- name: Install unzip
+  ansible.builtin.package:
+    name: unzip
+    state: present
+
+- name: Install gnupg2
+  ansible.builtin.package:
+    name: gnupg2
+    state: present

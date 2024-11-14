@@ -1,0 +1,16 @@
+---
+- name: Create web servers 
+  docker_container:
+    name: "webserver-{{ item }}"
+    image: ubuntu:20.04
+    state: started
+    command: /bin/bash -c "apt-get update && apt-get install -y python3 tzdata openssh-server && touch /var/log/auth.log && sleep infinity"
+    ports:
+      - "22"     # Expose SSH port
+      - "80"     # Expose HTTP port
+      - "443"    # Expose HTTPS port
+      - "9100"   # prometheus exporter
+    networks: 
+      - name: "{{ netbridge }}"
+    privileged: true
+  loop: [1, 2]

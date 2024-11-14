@@ -1,0 +1,32 @@
+[dockerhost]
+localhost
+
+[webservers]
+webserver-1
+webserver-2
+
+[postgres13]
+postgres
+
+[monitoring]
+monitoring-server
+
+[haproxy24]
+haproxy
+
+[containers:children]
+webservers
+postgres13
+monitoring
+haproxy24
+
+[all:vars]
+ansible_python_interpreter= /usr/bin/python3
+netbridge = "homework_bridge"
+
+[dockerhost:vars]
+ansible_connection=local
+
+[containers:vars]
+ansible_connection=docker
+

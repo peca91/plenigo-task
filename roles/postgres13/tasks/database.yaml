@@ -1,0 +1,42 @@
+---
+- name: Install required PostgreSQL development packages
+  ansible.builtin.apt:
+    name: 
+      - libpq-dev
+      - python3-psycopg2
+    state: present
+    update_cache: yes
+
+- name: Create PostgreSQL database
+  ansible.builtin.postgresql_db:
+    name: "{{ pg_db_name }}"
+    state: present
+  become: yes
+  become_user: postgres
+
+# Create PostgreSQL user with password
+- name: Create PostgreSQL user
+  ansible.builtin.postgresql_user:
+    name: "{{ pg_user }}"
+    password: "{{ pg_user_password }}"
+    state: present
+  become: yes
+  become_user: postgres
+
+# Grant privileges to the user on the database
+- name: Grant privileges to the user on the database
+  ansible.builtin.postgresql_user:
+    name: "{{ pg_user }}"
+    db: "{{ pg_db_name }}"
+    priv: "ALL"
+    state: present
+  become: yes
+  become_user: postgres
+
+# Grant CONNECT and USAGE privileges to the user on the database
+- name: Grant basic privileges to user on database
+  ansible.builtin.postgresql_query:
+    db: "{{ pg_db_name }}"
+    query: "GRANT CONNECT ON DATABASE {{ pg_db_name }} TO {{ pg_user }};"
+  become: yes
+  become_user: postgres

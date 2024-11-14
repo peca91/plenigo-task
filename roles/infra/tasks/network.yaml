@@ -1,0 +1,4 @@
+- name: "Create docker network: {{ netbridge }}"
+  ansible.builtin.docker_network:
+    name: "{{ netbridge }}"
+    driver: bridge

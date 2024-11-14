@@ -1,0 +1,27 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          blackbox_exporter
+# Required-Start:    $network
+# Required-Stop:     
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start blackbox_exporter at boot time
+### END INIT INFO
+
+blackbox_exporter_CMD="/usr/bin/blackbox_exporter --config.file /mnt/data/blackbox_exporter/blackbox.yml"
+
+case "$1" in
+  start)
+    nohup $blackbox_exporter_CMD > /proc/1/fd/1 2>/proc/1/fd/2 &
+    ;;
+  stop)
+    pkill -f "$blackbox_exporter_CMD"
+    ;;
+  restart)
+    pkill -f "$blackbox_exporter_CMD"
+    nohup $blackbox_exporter_CMD > /proc/1/fd/1 2>/proc/1/fd/2 &
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart}"
+    exit 1
+esac

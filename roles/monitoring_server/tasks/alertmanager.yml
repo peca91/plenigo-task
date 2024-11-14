@@ -1,0 +1,52 @@
+---
+- name: Add user 'alertmanager'
+  ansible.builtin.user:
+    name: alertmanager
+    shell: /usr/sbin/nologin
+    home: /var/lib/alertmanager
+
+- name: Create /tmp/alertmanager directory
+  ansible.builtin.file:
+    path: /tmp/alertmanager
+    state: directory
+
+- name: Download and unarchive alertmanager version
+  ansible.builtin.unarchive:
+    src:  https://github.com/prometheus/alertmanager/releases/download/v{{ alert_manager_version }}/alertmanager-{{ alert_manager_version }}.linux-amd64.tar.gz
+    dest: /tmp/alertmanager/
+    remote_src: yes
+
+- name: Copy alertmanager
+  ansible.builtin.copy:
+    src: /tmp/alertmanager/alertmanager-{{ alert_manager_version }}.linux-amd64/alertmanager
+    dest: /usr/bin/alertmanager
+    remote_src: yes
+    mode: "755"
+
+- name: Delete /tmp/alertmanager directory
+  ansible.builtin.file:
+    path: /tmp/alertmanager
+    state: absent
+
+- name: Create /mnt/data/alertmanager directory
+  ansible.builtin.file:
+    path: /mnt/data/alertmanager/
+    state: directory
+    owner: alertmanager
+    group: alertmanager
+
+- name: Create data directory
+  ansible.builtin.file:
+    path: /mnt/data/alertmanager/data
+    state: directory
+    owner: alertmanager
+    group: alertmanager
+
+- name: Copy alertmanager.yml
+  ansible.builtin.template:
+    src: "{{ role_path }}/files/alertmanager/alertmanager.yml.j2"
+    dest: /mnt/data/alertmanager/alertmanager.yml
+    mode: "0644"
+    owner: alertmanager
+    group: alertmanager
+

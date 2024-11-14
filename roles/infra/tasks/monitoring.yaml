@@ -1,0 +1,34 @@
+---
+- name: Define Docker volume for data
+  docker_volume:
+    name: data
+    state: present
+
+- name: Define Docker volume for grafana data
+  docker_volume:
+    name: grafana_data
+    state: present
+
+- name: Create monitoring servers 
+  docker_container:
+    name: "monitoring-server"
+    image: debian:bullseye
+    state: started
+    command: /bin/bash -c "apt-get update && apt-get install -y python3 tzdata openssh-server sudo && touch /var/log/auth.log && sleep infinity"
+    ports:
+      - "22"
+      - "9090"
+      - "9093"
+      - "3000"
+      - "9115"
+      - "9100"
+    networks: 
+      - name: "{{ netbridge }}"
+    privileged: true
+    volumes:
+      - data:/mnt/data
+      - grafana_data:/usr/share/grafana/data
+
+
+
+

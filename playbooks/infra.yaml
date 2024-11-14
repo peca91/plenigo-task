@@ -1,0 +1,9 @@
+---
+- name: Setup infrastructure
+  hosts: dockerhost
+
+  vars_files:
+    - vars/pgpassword.yml
+
+  roles:
+    - infra

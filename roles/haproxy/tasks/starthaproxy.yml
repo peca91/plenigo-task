@@ -1,0 +1,11 @@
+---
+- name: Copy haproxy init script
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/haproxy"
+    dest: /etc/init.d/haproxy
+    mode: "0755"
+    owner: haproxy
+    group: haproxy
+
+- name: Start haproxy
+  ansible.builtin.shell: "service haproxy start"

@@ -1,0 +1,20 @@
+---
+- name: Setup haproxy
+  hosts: haproxy24
+  vars_files:
+    - vars/security.yml
+
+  roles:
+    - common
+    - geerlingguy.security
+
+    - role: geerlingguy.firewall
+      vars:
+        firewall_allowed_tcp_ports:
+          - "5443"
+          - "8080"
+          - "22"
+          - "9100"
+    - role: haproxy
+      vars:
+        ACME_EMAIL: "petartornjanski@gmail.com"

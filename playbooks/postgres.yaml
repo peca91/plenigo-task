@@ -1,0 +1,16 @@
+---
+- name: Setup postgres
+  hosts: postgres
+  vars_files:
+    - vars/security.yml
+
+  roles:
+    - common
+    - geerlingguy.security
+
+    - role: geerlingguy.firewall
+      vars:
+        firewall_allowed_tcp_ports:
+          - "22"
+          - "1543"
+    - role: postgres13

@@ -1,0 +1,25 @@
+---
+- name: Install acme.sh
+  ansible.builtin.shell: |
+    apt-get install socat -y 
+    curl https://raw.githubusercontent.com/acmesh-official/acme.sh/master/acme.sh | sh -s -- --install-online --home /usr/local/share/acme.sh
+    ln -s /usr/local/share/acme.sh/acme.sh /usr/local/bin/
+    chmod 755 /usr/local/share/acme.sh/
+
+- name: Register acme.sh user
+  ansible.builtin.shell: /usr/local/bin/acme.sh --register-account -m {{ ACME_EMAIL }} --home /usr/local/share/acme.sh
+
+- name: Run acme.sh to issue SSL certificate
+  ansible.builtin.shell: "/usr/local/bin/acme.sh --issue --dns dns_cf -d '*.tornjanski.uk' --home /usr/local/share/acme.sh --cert-home /etc/haproxy/certs"
+  environment:
+    CF_Key: "{{ CF_Key }}"
+    CF_Email: "{{ ACME_EMAIL }}"
+
+- name: combine cer in single .pem
+  ansible.builtin.shell: |
+      cat /etc/haproxy/certs/\*.tornjanski.uk_ecc/\*.tornjanski.uk.cer \
+      /etc/haproxy/certs/\*.tornjanski.uk_ecc/\*.tornjanski.uk.key \
+      /etc/haproxy/certs/\*.tornjanski.uk_ecc/fullchain.cer \
+      /etc/haproxy/certs/\*.tornjanski.uk_ecc/ca.cer \
+      > /etc/haproxy/certs/tornjanski.uk_ecc.pem
+

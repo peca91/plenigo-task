@@ -1,0 +1,18 @@
+---
+- name: Setup nginx
+  hosts: webservers
+  vars_files:
+    - vars/security.yml
+
+  roles:
+    - common
+    - geerlingguy.security
+
+    - role: geerlingguy.firewall
+      vars:
+        firewall_allowed_tcp_ports:
+          - "22"
+          - "80"
+          - "443"
+    - role: webserver
+

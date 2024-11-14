@@ -1,0 +1,27 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          alertmanager
+# Required-Start:    $network
+# Required-Stop:     
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start alertmanager at boot time
+### END INIT INFO
+
+alertmanager_CMD="/usr/bin/alertmanager --config.file /mnt/data/alertmanager/alertmanager.yml --storage.path=/mnt/data/alertmanager/data/"
+
+case "$1" in
+  start)
+    nohup $alertmanager_CMD > /proc/1/fd/1 2>/proc/1/fd/2 &
+    ;;
+  stop)
+    pkill -f "$alertmanager_CMD"
+    ;;
+  restart)
+    pkill -f "$alertmanager_CMD"
+    nohup $alertmanager_CMD > /proc/1/fd/1 2>/proc/1/fd/2 &
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart}"
+    exit 1
+esac
