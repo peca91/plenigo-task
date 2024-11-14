@@ -1,0 +1,81 @@
+version: '3.8'
+
+networks:
+  custom_bridge_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  postgres_backup:
+  data:
+  grafana_data:
+
+services:
+  webserver-1:
+    image: ubuntu:20.04
+    command: /bin/bash -c "apt-get update && apt-get install -y python3 tzdata openssh-server && touch /var/log/auth.log && sleep infinity"
+    ports:
+      - "22"
+      - "80"
+      - "443"
+      - "9100"
+    networks:
+      - custom_bridge_network
+    privileged: true
+
+  webserver-2:
+    image: ubuntu:20.04
+    command: /bin/bash -c "apt-get update && apt-get install -y python3 tzdata openssh-server && touch /var/log/auth.log && sleep infinity"
+    ports:
+      - "22"
+      - "80"
+      - "443"
+      - "9100"
+    networks:
+      - custom_bridge_network
+    privileged: true
+
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}" # Set this in a .env file or as an environment variable
+    command: /bin/bash -c "apt-get update && apt-get install -y python3 pip tzdata openssh-server cron sudo && touch /var/log/auth.log && sleep infinity"
+    ports:
+      - "22"
+      - "5432:5432"
+      - "9100"
+    networks:
+      - custom_bridge_network
+    privileged: true
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - postgres_backup:/postgresql_backups
+
+  monitoring-server:
+    image: debian:bullseye
+    command: /bin/bash -c "apt-get update && apt-get install -y python3 tzdata openssh-server sudo && touch /var/log/auth.log && sleep infinity"
+    ports:
+      - "22"
+      - "9090" # Prometheus
+      - "9093" # Alertmanager
+      - "3000" # Grafana
+      - "9115" # Blackbox Exporter
+      - "9100" # Node Exporter
+    networks:
+      - custom_bridge_network
+    privileged: true
+    volumes:
+      - data:/mnt/data
+      - grafana_data:/usr/share/grafana/data
+
+  haproxy:
+    image: debian:bullseye
+    command: /bin/bash -c "apt-get update && apt-get install -y python3 tzdata openssh-server sudo curl cron && touch /var/log/auth.log && sleep infinity"
+    ports:
+      - "22"
+      - "5443:5443"   # HTTPS
+      - "8080:8080"   # HAProxy stats
+      - "9100"        # Prometheus exporter
+    networks:
+      - custom_bridge_network
+    privileged: true
