@@ -34,6 +34,7 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=secret_password  # Set admin password
     networks:
       - custom_bridge_network
+```  
 In this example:
 
 The Grafana configuration (grafana.ini) is loaded from ./configs/grafana.ini and mounted at /etc/grafana/grafana.ini within the container.
